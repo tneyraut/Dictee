@@ -27,6 +27,10 @@ class DicteeViewController: UIViewController, AVSpeechSynthesizerDelegate, UITex
     
     private var indice = 0
     
+    internal var voice = "fr-FR"
+    
+    internal var referenceLanguage = "FR"
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -181,6 +185,7 @@ class DicteeViewController: UIViewController, AVSpeechSynthesizerDelegate, UITex
         return resultat
     }
     
+    // to do add english term
     private func setSentencesArray()
     {
         var s = ""
@@ -189,27 +194,134 @@ class DicteeViewController: UIViewController, AVSpeechSynthesizerDelegate, UITex
             s = s + String(character)
             switch character {
             case ",":
-                s = s + " virgule"
+                if (self.referenceLanguage == "FR")
+                {
+                    s = s + " virgule"
+                }
+                else if (self.referenceLanguage == "EN")
+                {
+                    s = s + " comma"
+                }
                 self.sentencesArray.addObject(s)
                 s = ""
                 break
             case "?":
-                s = s + " point d'interrogation"
+                if (self.referenceLanguage == "FR")
+                {
+                    s = s + " point d'interrogation"
+                }
+                else if (self.referenceLanguage == "EN")
+                {
+                    s = s + " interrogation point"
+                }
                 self.sentencesArray.addObject(s)
                 s = ""
                 break
             case ";":
-                s = s + " point virgule"
+                if (self.referenceLanguage == "FR")
+                {
+                    s = s + " point virgule"
+                }
+                else if (self.referenceLanguage == "EN")
+                {
+                    s = s + " semicolon"
+                }
                 self.sentencesArray.addObject(s)
                 s = ""
                 break
             case ":":
-                s = s + " deux points"
+                if (self.referenceLanguage == "FR")
+                {
+                    s = s + " deux points"
+                }
+                else if (self.referenceLanguage == "EN")
+                {
+                    s = s + " two dots"
+                }
                 self.sentencesArray.addObject(s)
                 s = ""
                 break
             case ".":
-                s = s + " point"
+                if (self.referenceLanguage == "FR")
+                {
+                    s = s + " point"
+                }
+                else if (self.referenceLanguage == "EN")
+                {
+                    s = s + " dot"
+                }
+                self.sentencesArray.addObject(s)
+                s = ""
+                break
+            case "!":
+                if (self.referenceLanguage == "FR")
+                {
+                    s = s + " point d'exclamation"
+                }
+                else if (self.referenceLanguage == "EN")
+                {
+                    s = s + " exclamation point"
+                }
+                self.sentencesArray.addObject(s)
+                s = ""
+                break
+            case "(":
+                if (self.referenceLanguage == "FR")
+                {
+                    s = s + " ouvrez la parenthèse"
+                }
+                else if (self.referenceLanguage == "EN")
+                {
+                    s = s + " open parenthesis"
+                }
+                self.sentencesArray.addObject(s)
+                s = ""
+                break
+            case ")":
+                if (self.referenceLanguage == "FR")
+                {
+                    s = s + " fermez la parenthèse"
+                }
+                else if (self.referenceLanguage == "EN")
+                {
+                    s = s + " close parenthesis"
+                }
+                self.sentencesArray.addObject(s)
+                s = ""
+                break
+            case "\"":
+                if (self.referenceLanguage == "FR")
+                {
+                    s = s + " guillement"
+                }
+                else if (self.referenceLanguage == "EN")
+                {
+                    s = s + " quotation mark"
+                }
+                self.sentencesArray.addObject(s)
+                s = ""
+                break
+            case "{":
+                if (self.referenceLanguage == "FR")
+                {
+                    s = s + " ouvrez l'acollade"
+                }
+                else if (self.referenceLanguage == "EN")
+                {
+                    s = s + " open the acollade"
+                }
+                self.sentencesArray.addObject(s)
+                s = ""
+                break
+            case "}":
+                if (self.referenceLanguage == "FR")
+                {
+                    s = s + " fermez l'accolade"
+                }
+                else if (self.referenceLanguage == "EN")
+                {
+                    s = s + " close the acollade"
+                }
                 self.sentencesArray.addObject(s)
                 s = ""
                 break
@@ -238,7 +350,7 @@ class DicteeViewController: UIViewController, AVSpeechSynthesizerDelegate, UITex
         
         sp.rate = 0.5
         sp.pitchMultiplier = 1
-        sp.voice = AVSpeechSynthesisVoice(language:"fr-FR")
+        sp.voice = AVSpeechSynthesisVoice(language:self.voice)
         
         a.speakUtterance(sp)
     }

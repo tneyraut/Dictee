@@ -10,13 +10,13 @@ import UIKit
 
 class AccueilTableViewController: UITableViewController {
 
-    private let dicteesArray: NSArray = [
-        NSLocalizedString("DICTEE_1", comment:""),
-        NSLocalizedString("DICTEE_2", comment:""),
-        NSLocalizedString("DICTEE_3", comment:""),
-        NSLocalizedString("DICTEE_4", comment:""),
-        NSLocalizedString("DICTEE_5", comment:""),
-    ]
+    private let dicteesArray: NSArray = ["DICTEE_1_", "DICTEE_2_", "DICTEE_3_", "DICTEE_4_", "DICTEE_5_"]
+    
+    private let languagesArray: NSArray = ["Français", "Français Canadien", "English-GB", "English-USA"]
+    
+    private let referenceLanguageArray: NSArray = ["fr-FR", "fr-CA", "en-GB", "en-US"]
+    
+    private let referenceDicteeLanguageArray: NSArray = ["FR", "FR", "EN", "EN"]
     
     private let sauvegarde = NSUserDefaults()
     
@@ -40,6 +40,7 @@ class AccueilTableViewController: UITableViewController {
         
         if (!self.sauvegarde.boolForKey("initialisationDone"))
         {
+            self.sauvegarde.setObject(self.languagesArray[0], forKey:"language")
             var i = 0
             while (i < self.dicteesArray.count)
             {
@@ -49,6 +50,11 @@ class AccueilTableViewController: UITableViewController {
             self.sauvegarde.setBool(true, forKey:"initialisationDone")
             self.sauvegarde.synchronize()
         }
+        
+        let rightButton = UIBarButtonItem(title:self.sauvegarde.stringForKey("language"), style:UIBarButtonItemStyle.Done, target:self, action:#selector(self.rightButtonActionListener))
+        rightButton.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor(red:245.0/255.0, green:245.0/255.0, blue:245.0/255.0, alpha:1.0), NSShadowAttributeName: shadow, NSFontAttributeName: UIFont(name:"HelveticaNeue-CondensedBlack", size:21.0)!], forState:UIControlState.Normal)
+        
+        self.navigationItem.rightBarButtonItem = rightButton
         
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -67,6 +73,36 @@ class AccueilTableViewController: UITableViewController {
         
         super.viewDidAppear(animated)
     }
+    
+    @objc private func rightButtonActionListener()
+    {
+        let alertController = UIAlertController(title:"Language", message:"Choose a language", preferredStyle:.ActionSheet)
+        
+        var i = 0
+        while (i < self.languagesArray.count)
+        {
+            let s: String = self.languagesArray[i] as! String
+            let alertAction = UIAlertAction(title:self.languagesArray[i] as? String, style:.Default) { (_) in
+                let shadow = NSShadow()
+                shadow.shadowColor = UIColor(red:0.0, green:0.0, blue:0.0, alpha:0.8)
+                shadow.shadowOffset = CGSizeMake(0, 1)
+                
+                let rightButton = UIBarButtonItem(title:s, style:UIBarButtonItemStyle.Done, target:self, action:#selector(self.rightButtonActionListener))
+                rightButton.setTitleTextAttributes([NSForegroundColorAttributeName: UIColor(red:245.0/255.0, green:245.0/255.0, blue:245.0/255.0, alpha:1.0), NSShadowAttributeName: shadow, NSFontAttributeName: UIFont(name:"HelveticaNeue-CondensedBlack", size:21.0)!], forState:UIControlState.Normal)
+                
+                self.navigationItem.rightBarButtonItem = rightButton
+                
+                self.sauvegarde.setObject(s, forKey:"language")
+                self.sauvegarde.synchronize()
+            }
+            alertController.addAction(alertAction)
+            i += 1
+        }
+        let cancelAction = UIAlertAction(title:"Cancel", style:.Default) { (_) in }
+        alertController.addAction(cancelAction)
+        
+        self.presentViewController(alertController, animated:true, completion:nil)
+    }
 
     internal func dicteeDone(nombreFautes: Int, dictee: Int)
     {
@@ -76,6 +112,20 @@ class AccueilTableViewController: UITableViewController {
             self.sauvegarde.setInteger(nombreFautes, forKey:"NombreFautesDictee" + String(dictee))
             self.sauvegarde.synchronize()
         }
+    }
+    
+    private func getIndiceLanguage() -> Int
+    {
+        var i = 0
+        while (i < self.languagesArray.count)
+        {
+            if (self.navigationItem.rightBarButtonItem?.title == self.languagesArray[i] as? String)
+            {
+                return i
+            }
+            i += 1
+        }
+        return 0
     }
     
     // MARK: - Table view data source
@@ -115,11 +165,15 @@ class AccueilTableViewController: UITableViewController {
     }
     
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        let indice = self.getIndiceLanguage()
+        
         let dicteeViewController = DicteeViewController()
         
         dicteeViewController.dictee = indexPath.row + 1
         dicteeViewController.accueilTableViewController = self
-        dicteeViewController.text = self.dicteesArray[indexPath.row] as! String
+        dicteeViewController.text = NSLocalizedString(self.dicteesArray[indexPath.row] as! String + (self.referenceDicteeLanguageArray[indice] as! String), comment:"")
+        dicteeViewController.voice = self.referenceLanguageArray[indice] as! String
+        dicteeViewController.referenceLanguage = self.referenceDicteeLanguageArray[indice] as! String
         
         self.navigationController?.pushViewController(dicteeViewController, animated:true)
     }
